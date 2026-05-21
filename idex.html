@@ -1,11 +1,101 @@
-# préparation du portaille de conexion puis ajouter a web cc le sys conction ici portaill web cc donnée
 <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atherion OS Portal</title>
-    <link rel="manifest" href="manifest.json">
-    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script> <!-- Socket.IO -->
-    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.23.0/dist/ort.all.js"></script> <!-- WebNN via ORT -->
-    <script src="https://unpkg.com/jimp@0.22.12/browser/lib/jimp.min.js"></script> <!-- Jimp pour images -->
+    <title>Bienvenue - YassCode</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1 class="title">Bienvenue sur <span>YassCode</span></h1>
+
+        <div class="form-box" id="loginBox">
+            <h2>Connexion</h2>
+
+            <input type="text" id="loginUser" placeholder="Nom d'utilisateur">
+            <input type="password" id="loginPass" placeholder="Mot de passe">
+
+            <button onclick="login()">Se connecter</button>
+
+            <p class="switch" onclick="showCreate()">Créer un compte</p>
+            <p id="loginError" class="error"></p>
+        </div>
+
+        <div class="form-box hidden" id="createBox">
+            <h2>Créer un compte</h2>
+
+            <input type="text" id="newUser" placeholder="Nom d'utilisateur">
+            <input type="password" id="newPass" placeholder="Mot de passe">
+
+            <button onclick="createAccount()">Créer</button>
+
+            <p class="switch" onclick="showLogin()">Déjà un compte ? Connexion</p>
+            <p id="createError" class="error"></p>
+        </div>
+    </div>
+
+<script>
+    // Charger les comptes depuis localStorage
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+
+    function showCreate() {
+        document.getElementById("loginBox").classList.add("hidden");
+        document.getElementById("createBox").classList.remove("hidden");
+    }
+
+    function showLogin() {
+        document.getElementById("createBox").classList.add("hidden");
+        document.getElementById("loginBox").classList.remove("hidden");
+    }
+
+    function createAccount() {
+        let user = document.getElementById("newUser").value.trim();
+        let pass = document.getElementById("newPass").value.trim();
+        let error = document.getElementById("createError");
+
+        if (user === "" || pass === "") {
+            error.textContent = "Veuillez remplir tous les champs.";
+            return;
+        }
+
+        // Vérifier si l'utilisateur existe déjà
+        if (users.some(u => u.username === user)) {
+            error.textContent = "Ce nom d'utilisateur existe déjà.";
+            return;
+        }
+
+        // Ajouter le compte
+        users.push({ username: user, password: pass });
+        localStorage.setItem("users", JSON.stringify(users));
+
+        error.style.color = "lightgreen";
+        error.textContent = "Compte créé avec succès !";
+
+        setTimeout(showLogin, 1000);
+    }
+
+    function login() {
+        let user = document.getElementById("loginUser").value.trim();
+        let pass = document.getElementById("loginPass").value.trim();
+        let error = document.getElementById("loginError");
+
+        let found = users.find(u => u.username === user && u.password === pass);
+
+        if (found) {
+            error.style.color = "lightgreen";
+            error.textContent = "Connexion réussie !";
+
+            // Redirection (tu peux changer la page)
+            setTimeout(() => {
+                alert("Bienvenue " + user + " !");
+            }, 500);
+
+        } else {
+            error.textContent = "Nom d'utilisateur ou mot de passe incorrect.";
+        }
+    }
+</script>
+
+</body>
+</html>
