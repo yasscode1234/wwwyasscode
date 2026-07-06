@@ -1,91 +1,123 @@
+:root {
+  --bg: #020617;
+  --accent: #38bdf8;
+  --accent2: #a855f7;
+  --text: #e5e7eb;
+  --card: rgba(15, 23, 42, 0.9);
+}
+
+* { box-sizing: border-box; }
+
 body {
-    margin: 0;
-    padding: 0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #0a0f24, #1a2a6c, #b21f1f, #fdbb2d);
-    background-size: 400% 400%;
-    animation: gradient 12s ease infinite;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: white;
+  margin: 0;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+  background: radial-gradient(circle at top, #0f172a 0, #020617 55%, #000 100%);
+  color: var(--text);
 }
 
-@keyframes gradient {
-    0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 0% 50%; }
+.glow-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(56, 189, 248, 0.25), transparent 55%),
+    radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.25), transparent 55%);
+  filter: blur(40px);
+  opacity: 0.9;
 }
 
-.container {
-    text-align: center;
-    width: 350px;
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 2rem;
+  backdrop-filter: blur(16px);
+  background: linear-gradient(to right, rgba(15, 23, 42, 0.9), rgba(15, 23, 42, 0.4));
+  border-bottom: 1px solid rgba(148, 163, 184, 0.3);
 }
 
-.title {
-    font-size: 32px;
-    margin-bottom: 20px;
-    text-shadow: 0 0 10px #fff;
+.badge {
+  padding: 0.3rem 0.8rem;
+  border-radius: 999px;
+  border: 1px solid rgba(56, 189, 248, 0.6);
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.2), transparent 60%);
+  font-size: 0.8rem;
 }
 
-.title span {
-    color: #00eaff;
-    text-shadow: 0 0 15px #00eaff;
+.layout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  padding: 1.5rem 2rem 2.5rem;
 }
 
-.form-box {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 25px;
-    border-radius: 15px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
-    animation: fadeIn 0.5s ease;
+.card {
+  background: var(--card);
+  border-radius: 1.2rem;
+  padding: 1.3rem 1.5rem;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.9);
+  backdrop-filter: blur(18px);
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: scale(0.9); }
-    to { opacity: 1; transform: scale(1); }
+.card h2 {
+  margin-top: 0;
+  font-size: 1.1rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #c4b5fd;
+}
+
+label {
+  display: block;
+  margin-bottom: 0.8rem;
+  font-size: 0.9rem;
 }
 
 input {
-    width: 90%;
-    padding: 12px;
-    margin: 10px 0;
-    border: none;
-    border-radius: 8px;
-    outline: none;
+  width: 100%;
+  margin-top: 0.25rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 0.6rem;
+  border: 1px solid rgba(148, 163, 184, 0.6);
+  background: rgba(15, 23, 42, 0.8);
+  color: var(--text);
 }
 
 button {
-    width: 95%;
-    padding: 12px;
-    background: #00eaff;
-    border: none;
-    border-radius: 8px;
-    color: black;
-    font-weight: bold;
-    cursor: pointer;
-    transition: 0.3s;
+  margin-top: 0.6rem;
+  padding: 0.6rem 1rem;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #0b1120;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  box-shadow: 0 12px 30px rgba(56, 189, 248, 0.35);
 }
 
-button:hover {
-    background: #00bcd4;
+button.ghost {
+  background: transparent;
+  color: var(--accent);
+  border: 1px solid rgba(56, 189, 248, 0.6);
+  box-shadow: none;
 }
 
-.switch {
-    margin-top: 10px;
-    cursor: pointer;
-    color: #00eaff;
-    text-decoration: underline;
+video {
+  width: 100%;
+  border-radius: 0.9rem;
+  border: 1px solid rgba(148, 163, 184, 0.4);
+  background: #020617;
+  margin-bottom: 0.6rem;
 }
 
-.error {
-    margin-top: 10px;
-    color: #ff4d4d;
-    font-size: 14px;
+.rtc-controls {
+  display: flex;
+  gap: 0.6rem;
 }
 
-.hidden {
-    display: none;
+.hint {
+  font-size: 0.75rem;
+  color: #9ca3af;
 }
