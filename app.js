@@ -7,9 +7,8 @@ const loginForm = document.getElementById('login-form');
 const adminPanel = document.getElementById('admin-panel');
 const createAccountBtn = document.getElementById('create-account-btn');
 
-// Exemple de stockage local chiffré (démo) – à remplacer par un vrai backend
-// On ne met PAS le mot de passe en clair, ni "YASSINEa1!" dans le code.
-// On stocke un hash simulé (ici juste pour la démo).
+// Exemple de stockage local chiffré (démo) – à remplacer par un vrai backen
+// stocke un hash simulé (ici juste pour la démo).
 const ADMIN_USERNAME = 'yasscode';
 const ADMIN_HASH_KEY = 'admin_hash_v1';
 
