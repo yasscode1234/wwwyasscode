@@ -1,101 +1,72 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <title>Bienvenue - YassCode</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>Yasscode Neural Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="theme-color" content="#050816" />
+
+  <!-- Futuriste -->
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- ONNX Runtime Web + WebNN EP -->
+  <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.all.min.js"></script>
 </head>
 <body>
+  <div class="glow-bg"></div>
 
-    <div class="container">
-        <h1 class="title">Bienvenue sur <span>YassCode</span></h1>
+  <header class="topbar">
+    <h1>YASSCODE • Aetherion WebNN Node</h1>
+    <span class="badge">WebNN • WebRTC • PWA</span>
+  </header>
 
-        <div class="form-box" id="loginBox">
-            <h2>Connexion</h2>
+  <main class="layout">
+    <!-- Auth -->
+    <section class="card">
+      <h2>Connexion sécurisée</h2>
+      <form id="login-form">
+        <label>
+          Identifiant
+          <input type="text" id="login-username" autocomplete="username" required />
+        </label>
+        <label>
+          Mot de passe
+          <input type="password" id="login-password" autocomplete="current-password" required />
+        </label>
+        <button type="submit">Entrer dans le hub</button>
+      </form>
 
-            <input type="text" id="loginUser" placeholder="Nom d'utilisateur">
-            <input type="password" id="loginPass" placeholder="Mot de passe">
+      <button id="create-account-btn" class="ghost">Créer un compte</button>
+    </section>
 
-            <button onclick="login()">Se connecter</button>
+    <!-- Admin / WebNN -->
+    <section class="card" id="admin-panel" hidden>
+      <h2>Console admin Yasscode</h2>
+      <p>Chargement du modèle WebNN (ONNX)…</p>
+      <button id="load-model-btn">Charger le modèle</button>
+      <button id="run-inference-btn" disabled>Inference sur caméra</button>
+      <pre id="inference-output"></pre>
+    </section>
 
-            <p class="switch" onclick="showCreate()">Créer un compte</p>
-            <p id="loginError" class="error"></p>
-        </div>
+    <!-- Visio WebRTC -->
+    <section class="card">
+      <h2>Visio en direct (WebRTC)</h2>
+      <video id="local-video" autoplay playsinline muted></video>
+      <video id="remote-video" autoplay playsinline></video>
 
-        <div class="form-box hidden" id="createBox">
-            <h2>Créer un compte</h2>
+      <div class="rtc-controls">
+        <button id="start-call-btn">Démarrer l’appel</button>
+        <button id="hangup-btn">Terminer</button>
+      </div>
+      <p class="hint">
+        Pour limiter l’exposition IP, utilise un serveur TURN (relay-only) côté backend.
+      </p>
+    </section>
+  </main>
 
-            <input type="text" id="newUser" placeholder="Nom d'utilisateur">
-            <input type="password" id="newPass" placeholder="Mot de passe">
-
-            <button onclick="createAccount()">Créer</button>
-
-            <p class="switch" onclick="showLogin()">Déjà un compte ? Connexion</p>
-            <p id="createError" class="error"></p>
-        </div>
-    </div>
-
-<script>
-    // Charger les comptes depuis localStorage
-    let users = JSON.parse(localStorage.getItem("users")) || [];
-
-    function showCreate() {
-        document.getElementById("loginBox").classList.add("hidden");
-        document.getElementById("createBox").classList.remove("hidden");
-    }
-
-    function showLogin() {
-        document.getElementById("createBox").classList.add("hidden");
-        document.getElementById("loginBox").classList.remove("hidden");
-    }
-
-    function createAccount() {
-        let user = document.getElementById("newUser").value.trim();
-        let pass = document.getElementById("newPass").value.trim();
-        let error = document.getElementById("createError");
-
-        if (user === "" || pass === "") {
-            error.textContent = "Veuillez remplir tous les champs.";
-            return;
-        }
-
-        // Vérifier si l'utilisateur existe déjà
-        if (users.some(u => u.username === user)) {
-            error.textContent = "Ce nom d'utilisateur existe déjà.";
-            return;
-        }
-
-        // Ajouter le compte
-        users.push({ username: user, password: pass });
-        localStorage.setItem("users", JSON.stringify(users));
-
-        error.style.color = "lightgreen";
-        error.textContent = "Compte créé avec succès !";
-
-        setTimeout(showLogin, 1000);
-    }
-
-    function login() {
-        let user = document.getElementById("loginUser").value.trim();
-        let pass = document.getElementById("loginPass").value.trim();
-        let error = document.getElementById("loginError");
-
-        let found = users.find(u => u.username === user && u.password === pass);
-
-        if (found) {
-            error.style.color = "lightgreen";
-            error.textContent = "Connexion réussie !";
-
-            // Redirection (tu peux changer la page)
-            setTimeout(() => {
-                alert("Bienvenue " + user + " !");
-            }, 500);
-
-        } else {
-            error.textContent = "Nom d'utilisateur ou mot de passe incorrect.";
-        }
-    }
-</script>
-
+  <script src="app.js" type="module"></script>
 </body>
 </html>
