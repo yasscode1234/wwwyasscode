@@ -1,72 +1,213 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <title>Yasscode Neural Hub</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- PWA -->
-  <link rel="manifest" href="manifest.webmanifest" />
-  <meta name="theme-color" content="#050816" />
-
-  <!-- Futuriste -->
-  <link rel="stylesheet" href="style.css" />
-
-  <!-- ONNX Runtime Web + WebNN EP -->
-  <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.all.min.js"></script>
+    <meta charset="UTF-8">
+    <title>Yasscode Notes Futuristes</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="glow-bg"></div>
+    <div class="bg-grid"></div>
 
-  <header class="topbar">
-    <h1>YASSCODE • Aetherion WebNN Node</h1>
-    <span class="badge">WebNN • WebRTC • PWA</span>
-  </header>
+    <div class="app-container">
+        <!-- Écran de connexion -->
+        <section id="login-screen" class="card glass">
+            <h1 class="logo">YASSCODE<span>_hub</span></h1>
+            <p class="subtitle">Connexion à l’espace notes & événements</p>
 
-  <main class="layout">
-    <!-- Auth -->
-    <section class="card">
-      <h2>Connexion sécurisée</h2>
-      <form id="login-form">
-        <label>
-          Identifiant
-          <input type="text" id="login-username" autocomplete="username" required />
-        </label>
-        <label>
-          Mot de passe
-          <input type="password" id="login-password" autocomplete="current-password" required />
-        </label>
-        <button type="submit">Entrer dans le hub</button>
-      </form>
+            <div class="form-group">
+                <label for="username">Nom d’utilisateur GitHub</label>
+                <input type="text" id="username" placeholder="yasscode">
+            </div>
 
-      <button id="create-account-btn" class="ghost">Créer un compte</button>
-    </section>
+            <div class="form-group">
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" placeholder="••••••••">
+            </div>
 
-    <!-- Admin / WebNN -->
-    <section class="card" id="admin-panel" hidden>
-      <h2>Console admin Yasscode</h2>
-      <p>Chargement du modèle WebNN (ONNX)…</p>
-      <button id="load-model-btn">Charger le modèle</button>
-      <button id="run-inference-btn" disabled>Inference sur caméra</button>
-      <pre id="inference-output"></pre>
-    </section>
+            <button id="login-btn" class="btn primary">Se connecter</button>
+            <p id="login-error" class="error-msg"></p>
+        </section>
 
-    <!-- Visio WebRTC -->
-    <section class="card">
-      <h2>Visio en direct (WebRTC)</h2>
-      <video id="local-video" autoplay playsinline muted></video>
-      <video id="remote-video" autoplay playsinline></video>
+        <!-- Écran principal -->
+        <section id="main-screen" class="hidden">
+            <header class="top-bar glass">
+                <div class="logo">YASSCODE<span>_hub</span></div>
+                <div class="user-info">
+                    Connecté en tant que <span id="user-label">yasscode</span>
+                </div>
+            </header>
 
-      <div class="rtc-controls">
-        <button id="start-call-btn">Démarrer l’appel</button>
-        <button id="hangup-btn">Terminer</button>
-      </div>
-      <p class="hint">
-        Pour limiter l’exposition IP, utilise un serveur TURN (relay-only) côté backend.
-      </p>
-    </section>
-  </main>
+            <main class="layout">
+                <!-- Création de contenu -->
+                <section class="card glass editor">
+                    <h2>Créer une note / un événement</h2>
 
-  <script src="app.js" type="module"></script>
+                    <div class="form-group">
+                        <label for="item-title">Titre</label>
+                        <input type="text" id="item-title" placeholder="Ex: Réunion projet Aetherion">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="item-type">Type</label>
+                        <select id="item-type">
+                            <option value="note">Note</option>
+                            <option value="event">Événement</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="item-date">Date</label>
+                        <input type="date" id="item-date">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="item-importance">Importance</label>
+                        <select id="item-importance">
+                            <option value="high">Très important</option>
+                            <option value="medium">Important</option>
+                            <option value="low">Secondaire</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="item-content">Contenu / détails</label>
+                        <textarea id="item-content" rows="4" placeholder="Détails, objectifs, liens, etc."></textarea>
+                    </div>
+
+                    <button id="add-item-btn" class="btn accent">Ajouter</button>
+                </section>
+
+                <!-- Affichage des notes / événements -->
+                <section class="card glass board">
+                    <h2>Timeline des priorités</h2>
+
+                    <div class="columns">
+                        <div class="column">
+                            <h3>Aujourd’hui – Très importants</h3>
+                            <div id="today-high" class="items-list"></div>
+                        </div>
+
+                        <div class="column">
+                            <h3>Aujourd’hui – Moins importants</h3>
+                            <div id="today-other" class="items-list"></div>
+                        </div>
+
+                        <div class="column">
+                            <h3>À venir</h3>
+                            <div id="upcoming" class="items-list"></div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </section>
+    </div>
+
+    <script>
+        // --- Login simple (en dur) ---
+        const VALID_USERNAME = "yasscode";
+        const VALID_PASSWORD = "YASSINEa1!";
+
+        const loginScreen = document.getElementById("login-screen");
+        const mainScreen = document.getElementById("main-screen");
+        const loginBtn = document.getElementById("login-btn");
+        const loginError = document.getElementById("login-error");
+
+        loginBtn.addEventListener("click", () => {
+            const user = document.getElementById("username").value.trim();
+            const pass = document.getElementById("password").value;
+
+            if (user === VALID_USERNAME && pass === VALID_PASSWORD) {
+                loginScreen.classList.add("fade-out");
+                setTimeout(() => {
+                    loginScreen.classList.add("hidden");
+                    mainScreen.classList.remove("hidden");
+                    mainScreen.classList.add("fade-in");
+                    document.getElementById("user-label").textContent = user;
+                }, 400);
+            } else {
+                loginError.textContent = "Identifiants incorrects.";
+            }
+        });
+
+        // --- Gestion des notes / événements ---
+        const addItemBtn = document.getElementById("add-item-btn");
+        const todayHighContainer = document.getElementById("today-high");
+        const todayOtherContainer = document.getElementById("today-other");
+        const upcomingContainer = document.getElementById("upcoming");
+
+        let items = [];
+
+        function getTodayString() {
+            const d = new Date();
+            return d.toISOString().split("T")[0]; // format YYYY-MM-DD
+        }
+
+        function renderItems() {
+            const today = getTodayString();
+
+            todayHighContainer.innerHTML = "";
+            todayOtherContainer.innerHTML = "";
+            upcomingContainer.innerHTML = "";
+
+            items.forEach(item => {
+                const card = document.createElement("div");
+                card.className = "item-card appear";
+
+                const badgeType = item.type === "event" ? "Événement" : "Note";
+                const importanceLabel =
+                    item.importance === "high" ? "Très important" :
+                    item.importance === "medium" ? "Important" :
+                    "Secondaire";
+
+                card.innerHTML = `
+                    <div class="item-header">
+                        <span class="item-type">${badgeType}</span>
+                        <span class="item-importance importance-${item.importance}">
+                            ${importanceLabel}
+                        </span>
+                    </div>
+                    <h4 class="item-title">${item.title}</h4>
+                    <p class="item-date">Date : ${item.date}</p>
+                    <p class="item-content">${item.content}</p>
+                `;
+
+                if (item.date === today) {
+                    if (item.importance === "high") {
+                        todayHighContainer.appendChild(card);
+                    } else {
+                        todayOtherContainer.appendChild(card);
+                    }
+                } else if (item.date > today) {
+                    upcomingContainer.appendChild(card);
+                } else {
+                    // Passé : on peut choisir de les mettre dans "Aujourd’hui – moins importants"
+                    todayOtherContainer.appendChild(card);
+                }
+            });
+        }
+
+        addItemBtn.addEventListener("click", () => {
+            const title = document.getElementById("item-title").value.trim();
+            const type = document.getElementById("item-type").value;
+            const date = document.getElementById("item-date").value;
+            const importance = document.getElementById("item-importance").value;
+            const content = document.getElementById("item-content").value.trim();
+
+            if (!title || !date) return;
+
+            const newItem = { title, type, date, importance, content };
+            items.push(newItem);
+
+            // Animation légère : re-render
+            renderItems();
+
+            // Reset formulaire
+            document.getElementById("item-title").value = "";
+            document.getElementById("item-content").value = "";
+        });
+
+        // Init
+        renderItems();
+    </script>
 </body>
 </html>
